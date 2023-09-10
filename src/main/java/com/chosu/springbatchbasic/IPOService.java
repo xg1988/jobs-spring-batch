@@ -1,7 +1,6 @@
 package com.chosu.springbatchbasic;
 
 import com.chosu.springbatchbasic.util.JsoupParser;
-import com.chosu.springbatchbasic.util.StringUtil;
 import com.chosu.springbatchbasic.util.URLConst;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
@@ -23,7 +22,7 @@ public class IPOService {
 
     public List<IPODto> getNaverIPOList(){
         log.info("NaverIPOService getNaverIPOList start!!");
-        List<IPODto> list = new ArrayList<IPODto>();
+        List<IPODto> list = new ArrayList<>();
 
         Document doc            = JsoupParser.getDocHtml(URLConst.NAVER_IPO_REQ_URL);
         Elements element        = JsoupParser.getElBySelector(doc, "table.type_7");
@@ -31,15 +30,14 @@ public class IPOService {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         log.info("[기준일자] :{}", today);
 
-        for(int i =0; i < elList.size(); i++) {
-            Element el = elList.get(i);
-            String detailDepth1Url = el.getElementsByClass("lst")
-                                        .attr("href");
-            if(!"".equals(StringUtil.nvl(detailDepth1Url, ""))) {
+        for (Element el : elList) {
+            /*String detailDepth1Url = el.getElementsByClass("lst")
+                    .attr("href");
+            if (!"".equals(StringUtil.nvl(detailDepth1Url, ""))) {
                 Document detailDoc = JsoupParser.getDocHtml(detailDepth1Url);
-            }
+            }*/
 
-            if(!"".equals(el.getElementsByClass("item_name").text())
+            if (!"".equals(el.getElementsByClass("item_name").text())
                     && !"미정".equals(el.getElementsByClass("area_private").text().replaceAll("개인청약 ", ""))) {
 
                 IPODto IPODto = new IPODto().builder()
