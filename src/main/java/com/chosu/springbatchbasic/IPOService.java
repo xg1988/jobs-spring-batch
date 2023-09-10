@@ -28,7 +28,7 @@ public class IPOService {
         Elements element        = JsoupParser.getElBySelector(doc, "table.type_7");
         List<org.jsoup.nodes.Element> elList    = JsoupParser.getElListBySelector(element, "tr");
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        log.info("[기준일자] :{}", today);
+
 
         for (Element el : elList) {
 
