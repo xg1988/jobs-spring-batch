@@ -71,13 +71,10 @@ public class IPOBatchJob {
     @JobScope
     public Step initTableStep(){
         return stepBuilderFactory.get("initTableStep")
-        .tasklet(new Tasklet() {
-            @Override
-            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                int result = ipoRepository.deleteByRegistDate(today);
-                return RepeatStatus.FINISHED;
-            }
+        .tasklet((contribution, chunkContext) -> {
+            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            ipoRepository.deleteByRegistDate(today);
+            return RepeatStatus.FINISHED;
         })
         .build();
     }
@@ -122,10 +119,7 @@ public class IPOBatchJob {
 
     private ItemReader<? extends IPODto> itemReader() {
         log.info("itemReader Start!!");
-        List<IPODto> list = getItems();
-        log.info("list.size() ->" + list.size());
-        ListItemReader<? extends IPODto> listItemReader = new ListItemReader<>(list);
-        return listItemReader;
+        return new ListItemReader<>(getItems());
     }
 
     private List<IPODto> getItems() {
