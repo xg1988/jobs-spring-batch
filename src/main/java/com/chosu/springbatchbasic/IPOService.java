@@ -1,6 +1,5 @@
 package com.chosu.springbatchbasic;
 
-import com.chosu.springbatchbasic.util.DateUtil;
 import com.chosu.springbatchbasic.util.JsoupParser;
 import com.chosu.springbatchbasic.util.StringUtil;
 import com.chosu.springbatchbasic.util.URLConst;
@@ -14,18 +13,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 @Slf4j
-public class NaverIPOService {
+public class IPOService {
 
 
 
-    public List<NaverIPODto> getNaverIPOList(){
+    public List<IPODto> getNaverIPOList(){
         log.info("NaverIPOService getNaverIPOList start!!");
-        List<NaverIPODto> list = new ArrayList<NaverIPODto>();
+        List<IPODto> list = new ArrayList<IPODto>();
 
         Document doc            = JsoupParser.getDocHtml(URLConst.NAVER_IPO_REQ_URL);
         Elements element        = JsoupParser.getElBySelector(doc, "table.type_7");
@@ -44,7 +42,7 @@ public class NaverIPOService {
             if(!"".equals(el.getElementsByClass("item_name").text())
                     && !"미정".equals(el.getElementsByClass("area_private").text().replaceAll("개인청약 ", ""))) {
 
-                NaverIPODto naverIPODto = new NaverIPODto().builder()
+                IPODto IPODto = new IPODto().builder()
                         .id(today + "_" + el.getElementsByClass("item_name").text().split(" ")[1].trim())
                         .gongmoComp(el.getElementsByClass("area_sup").text().replaceAll("주관사 ", ""))
                         .compCategory(el.getElementsByClass("area_type").text().replaceAll("업종 ", ""))
@@ -57,7 +55,7 @@ public class NaverIPOService {
                         .requestTerm(el.getElementsByClass("area_private").text().replaceAll("개인청약 ", ""))
                         .registDate(today)
                         .registTime(LocalDateTime.now()).build();
-                list.add(naverIPODto);
+                list.add(IPODto);
             }
         }
         return list;

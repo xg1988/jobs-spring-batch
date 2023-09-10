@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 @ToString
 @Entity
-@Table(name="naver_ipo_info")
+@Table(name="ipo_info")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class NaverIPODto {
+public class IPODto {
 	@Id
 	public String id;
 	public String compName;

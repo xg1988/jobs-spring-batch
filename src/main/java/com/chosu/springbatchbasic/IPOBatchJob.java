@@ -29,23 +29,23 @@ import java.util.List;
 
 @Configuration
 @Slf4j
-public class NaverIPOBatchJob {
+public class IPOBatchJob {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
-    private final NaverIPOService ipoService;
+    private final IPOService ipoService;
 
-    private final NaverIPORepository ipoRepository;
+    private final IPORepository ipoRepository;
 
     private final EntityManagerFactory entityManagerFactory;
 
     private final DataSource dataSource;
 
-    public NaverIPOBatchJob(JobBuilderFactory jobBuilderFactory
+    public IPOBatchJob(JobBuilderFactory jobBuilderFactory
                             , StepBuilderFactory stepBuilderFactory
-                            , NaverIPOService ipoService
-                            , NaverIPORepository ipoRepository
+                            , IPOService ipoService
+                            , IPORepository ipoRepository
                             , EntityManagerFactory entityManagerFactory
                             , DataSource dataSource
                             ){
@@ -63,22 +63,18 @@ public class NaverIPOBatchJob {
         return jobBuilderFactory.get("chunkProcessingJob")
                 .incrementer(new RunIdIncrementer())
                 .start(this.initTableStep())
-                .next(this.getNaverIPOListStep())
+                .next(this.getIPOListStep())
                 .build();
     }
 
     @Bean
     @JobScope
     public Step initTableStep(){
-        return stepBuilderFactory.get("initNaverIPOListStep")
+        return stepBuilderFactory.get("initTableStep")
         .tasklet(new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                // 비즈니스 로직 작성
-                // 현재 날짜 구하기
-                // 결과 출력
                 String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                System.out.println(today);  // 2021/06/17
                 int result = ipoRepository.deleteByRegistDate(today);
                 return RepeatStatus.FINISHED;
             }
@@ -89,24 +85,24 @@ public class NaverIPOBatchJob {
 
     @Bean
     @JobScope
-    public Step getNaverIPOListStep() throws Exception {
-        log.info("getNaverIPOListStep Start!!");
-        return stepBuilderFactory.get("getNaverIPOListStep")
-                .<NaverIPODto, NaverIPODto> chunk(10000)
+    public Step getIPOListStep() throws Exception {
+        log.info("getIPOListStep Start!!");
+        return stepBuilderFactory.get("getIPOListStep")
+                .<IPODto, IPODto> chunk(10000)
                 .reader(itemReader())
                 .processor(itemProcessor())
                 .writer(itemWriter())
                 .build();
     }
 
-    private ItemWriter<NaverIPODto> itemWriter() {
+    private ItemWriter<IPODto> itemWriter() {
 
-        JdbcBatchItemWriter<NaverIPODto> itemWriter = new JdbcBatchItemWriterBuilder<NaverIPODto>()
+        JdbcBatchItemWriter<IPODto> itemWriter = new JdbcBatchItemWriterBuilder<IPODto>()
                 .dataSource(dataSource)
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .sql("insert \n" +
                         "        into\n" +
-                        "            naver_ipo_info\n" +
+                        "            ipo_info\n" +
                         "            (id, compCategory, compName, competition, gongmoComp, gongmoPrice, gongmoState, listingDate, marketName, requestTerm, registDate, registTime) \n" +
                         "        values \n"+
                         "            (:id, :compCategory, :compName, :competition, :gongmoComp, :gongmoPrice, :gongmoState, :listingDate, :marketName, :requestTerm, :registDate, :registTime)")
@@ -119,20 +115,20 @@ public class NaverIPOBatchJob {
 
 
 
-    private ItemProcessor<NaverIPODto,NaverIPODto> itemProcessor() {
+    private ItemProcessor<IPODto, IPODto> itemProcessor() {
         log.info("itemProcessor Start!!");
-
         return item -> item;
     }
 
-    private ItemReader<? extends NaverIPODto> itemReader() {
-        List<NaverIPODto> list = getItems();
+    private ItemReader<? extends IPODto> itemReader() {
+        log.info("itemReader Start!!");
+        List<IPODto> list = getItems();
         log.info("list.size() ->" + list.size());
-        ListItemReader<? extends NaverIPODto> listItemReader = new ListItemReader<>(list);
+        ListItemReader<? extends IPODto> listItemReader = new ListItemReader<>(list);
         return listItemReader;
     }
 
-    private List<NaverIPODto> getItems() {
+    private List<IPODto> getItems() {
         log.info("getItems Start!!");
         return ipoService.getNaverIPOList();
     }
