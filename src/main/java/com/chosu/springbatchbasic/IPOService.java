@@ -29,6 +29,7 @@ public class IPOService {
         List<org.jsoup.nodes.Element> elList    = JsoupParser.getElListBySelector(element, "tr");
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         log.info("[기준일자] :{}", today);
+        log.info("[기준일자] :{}", today);
 
         for (Element el : elList) {
             /*String detailDepth1Url = el.getElementsByClass("lst")
