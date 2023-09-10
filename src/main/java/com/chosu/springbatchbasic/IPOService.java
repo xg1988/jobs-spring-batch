@@ -54,6 +54,7 @@ public class IPOService {
                         .registDate(today)
                         .registTime(LocalDateTime.now()).build();
                 log.info("IPODto : {}", IPODto);
+                log.info("IPODto : {}", IPODto);
                 list.add(IPODto);
             }
         }
