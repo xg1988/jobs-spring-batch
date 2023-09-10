@@ -31,11 +31,7 @@ public class IPOService {
         log.info("[기준일자] :{}", today);
 
         for (Element el : elList) {
-            /*String detailDepth1Url = el.getElementsByClass("lst")
-                    .attr("href");
-            if (!"".equals(StringUtil.nvl(detailDepth1Url, ""))) {
-                Document detailDoc = JsoupParser.getDocHtml(detailDepth1Url);
-            }*/
+
 
             if (!"".equals(el.getElementsByClass("item_name").text())
                     && !"미정".equals(el.getElementsByClass("area_private").text().replaceAll("개인청약 ", ""))) {
