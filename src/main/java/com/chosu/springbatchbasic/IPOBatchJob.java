@@ -66,6 +66,7 @@ public class IPOBatchJob {
         return stepBuilderFactory.get("initTableStep")
         .tasklet((contribution, chunkContext) -> {
             String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            log.info("today : {}", today);
             ipoRepository.deleteByRegistDate(today);
             return RepeatStatus.FINISHED;
         })
